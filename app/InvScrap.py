@@ -1,6 +1,6 @@
 import investpy as ipy
 from typing import NamedTuple
-import time
+from datetime import date
 
 FROM_DATE = "01/01/2018"
 
@@ -17,12 +17,12 @@ class Etf(Product):
 
 class App:
     def __init__(self):
-        self.today = time.
+        self.today = date.today
 
     @staticmethod
     def download_etf_data(etf):
         ipy.etfs.get_etf_historical_data(
             etf.name, etf.country, etf.from_date,
-            to_date, stock_exchange=etf.stock_exchange=,
+            to_date, stock_exchange=etf.stock_exchange,
             as_json=False, order='ascending',
             interval='Daily')
