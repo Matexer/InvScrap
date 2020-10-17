@@ -17,11 +17,10 @@ class App:
     @staticmethod
     def load_config() -> Config:
         if not os.path.isfile("./config.json"):
-            config = Config()
             with open('config.json', "w") as config_file:
-                json.dump(config._asdict(), config_file,
+                json.dump(Config()._asdict(), config_file,
                           indent=2, separators=(',', ': '))
-            return config
+            return Config()
 
         with open('config.json') as config_file:
             data = json.load(config_file)

@@ -1,8 +1,9 @@
-from typing import NamedTuple, Tuple
+from typing import NamedTuple
+from dataclasses import dataclass
 
 
-class Product(NamedTuple):
-    id_num: int
+@dataclass(frozen=True)
+class Product:
     own_name: str
     full_name: str
     country: str
@@ -10,10 +11,12 @@ class Product(NamedTuple):
     to_date: str
 
 
+@dataclass(frozen=True)
 class Stock(Product):
-    eff: str
+    ...
 
 
+@dataclass(frozen=True)
 class Etf(Product):
     stock_exchange: str
 
