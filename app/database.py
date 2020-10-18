@@ -1,12 +1,14 @@
 import sqlite3
-import os
 from dataclasses import astuple
 from typing import Tuple, Type, Union, Literal
+import pathlib
 from .structures import Product, Etf, Stock
 
 
 tables = {Etf: "etfs",
           Stock: "stocks"}
+
+Boolean = Literal[True, False]
 
 
 class Database:
@@ -16,10 +18,11 @@ class Database:
         else:
             db_name = "productsDB.db"
 
-        if not os.path.isfile(db_name):
-            self.connection = self.__create(db_name)
-        else:
+        if pathlib.Path(db_name).is_file():
             self.connection = sqlite3.connect(db_name)
+        else:
+            self.connection = self.__create(db_name)
+
 
     @staticmethod
     def __create(db_name):
@@ -64,8 +67,16 @@ class Database:
         data = c.fetchone()
         return product_type(*data)
 
+    def get_all_products(self, product_type: Type[Product])\
+        -> Tuple[Product, ...]:
+        table = tables[product_type]
+        c = self.connection.cursor()
+        c.execute(f"SELECT * FROM {table}")
+        data = c.fetchall()
+        return tuple(product_type(*p_data) for p_data in data)
+
     def is_name_free(self, name: str)\
-        -> Literal[False, True]:
+        -> Boolean:
         c = self.connection.cursor()
         for tab in tables.values():
             c.execute(f"SELECT 1 FROM {tab} WHERE own_name=? LIMIT 1", 
