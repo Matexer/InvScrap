@@ -1,5 +1,6 @@
 import unittest
 from typing import NamedTuple, Any
+from collections import defaultdict
 from app.database import Database
 from app.structures import Stock, Etf
 
@@ -21,15 +22,31 @@ class TestDatabase(unittest.TestCase):
     def test_2_is_name_free(self):
         f = self.db.is_name_free
         for case in self.input_cases:
-            self.assertEqual(f((case.own_name)), False)
+            self.assertFalse(f(case.own_name))
 
         for case in ("fasdjhf", "hfdsgfhf"):
-            self.assertEqual(f((case)), True)
+            self.assertTrue(f(case))
 
     def test_3_overwrite_insertion(self):
         for case in self.input_cases:
             self.db.insert(case, overwrite=True)
 
-    def test_4_deletion(self):
+    def test_4_get_product(self):
+        test_cases = ((p.__class__, p.own_name) 
+                      for p in self.input_cases)
+        f = self.db.get_product
+        for case, result in zip(test_cases, self.input_cases):
+            self.assertEqual(f(*case), result)
+
+    def test_5_get_names(self):
+        f = self.db.get_names
+        names = defaultdict(list)
+        for case in self.input_cases:
+            names[case.__class__].append(case.own_name)
+        
+        for p_type, all_names in names.items():
+            self.assertEqual(f(p_type), tuple(all_names))
+
+    def test_6_deletion(self):
         for case in self.input_cases:
             self.db.delete(case)

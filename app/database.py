@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from dataclasses import astuple
+from typing import Tuple
 from .structures import Product, Etf, Stock
 
 
@@ -46,33 +47,50 @@ class Database:
         conn.commit()
         return conn
 
-    def execute(self, order):
-        self.connection.executescript(order)
-        self.connection.commit()
-    
-    def is_name_free(self, name):
-        tabs = tuple(tables.values())
-        for tab in tabs:
-            result = self.connection.executescript(
-                f"SELECT EXISTS(SELECT 1 FROM {tab} WHERE" 
-                f"'own_name'='%{name}%' LIMIT 1);")
-            result = self.connection.cursor().fetchall()
+    def get_names(self, product: Product)\
+        -> Tuple[str, ...]:
+        table = tables[product]
+        c = self.connection.cursor()
+        c.execute(f"SELECT own_name FROM {table}")
+        data = c.fetchall()
+        return tuple(*data)
+
+    def get_product(self, product: Product, name: str)\
+        -> Product:
+        table = tables[product]
+        c = self.connection.cursor()
+        c.execute(f"SELECT * FROM {table} WHERE own_name=? LIMIT 1", 
+            (name, ))
+        data = c.fetchone()
+        return product(*data)
+
+    def is_name_free(self, name: str)\
+        -> True or False:
+        c = self.connection.cursor()
+        for tab in tables.values():
+            c.execute(f"SELECT 1 FROM {tab} WHERE own_name=? LIMIT 1", 
+                      (name, ))
+            result = c.fetchone()
             if result:
                 return False
         return True
-    
+
     def insert(self, product: Product, *, overwrite=False):
         table = tables[product.__class__]
+        c = self.connection.cursor()
         if not overwrite:
-            self.execute(
+            c.execute(
                 f"INSERT INTO {table} VALUES " +
                 str(astuple(product)))
         else:
-            self.execute(
+            c.execute(
                 f"INSERT OR REPLACE INTO {table} VALUES " +
                 str(astuple(product)))
+        self.connection.commit()
 
     def delete(self, product: Product):
         table = tables[product.__class__]
-        self.execute(f"DELETE FROM {table} "
-                     f"WHERE own_name LIKE '%{product.own_name}%';")
+        c = self.connection.cursor()
+        c.execute(f"DELETE FROM {table} WHERE own_name LIKE ?;",
+            (product.own_name, ))
+        self.connection.commit()
