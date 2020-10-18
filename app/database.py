@@ -1,7 +1,7 @@
 import sqlite3
 import os
 from dataclasses import astuple
-from typing import Tuple
+from typing import Tuple, Type, Union, Literal
 from .structures import Product, Etf, Stock
 
 
@@ -47,25 +47,25 @@ class Database:
         conn.commit()
         return conn
 
-    def get_names(self, product: Product)\
+    def get_names(self, product_type: Type[Product])\
         -> Tuple[str, ...]:
-        table = tables[product]
+        table = tables[product_type]
         c = self.connection.cursor()
         c.execute(f"SELECT own_name FROM {table}")
         data = c.fetchall()
         return tuple(*data)
 
-    def get_product(self, product: Product, name: str)\
+    def get_product(self, product_type: Type[Product], name: str)\
         -> Product:
-        table = tables[product]
+        table = tables[product_type]
         c = self.connection.cursor()
         c.execute(f"SELECT * FROM {table} WHERE own_name=? LIMIT 1", 
             (name, ))
         data = c.fetchone()
-        return product(*data)
+        return product_type(*data)
 
     def is_name_free(self, name: str)\
-        -> True or False:
+        -> Literal[False, True]:
         c = self.connection.cursor()
         for tab in tables.values():
             c.execute(f"SELECT 1 FROM {tab} WHERE own_name=? LIMIT 1", 

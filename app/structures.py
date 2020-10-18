@@ -23,5 +23,6 @@ class Etf(Product):
 
 class Config(NamedTuple):
     output_folder: str = "./output"
+    output_format: str = "investing"
     from_date: str = "01/01/2018"
     to_date: str = "today"
