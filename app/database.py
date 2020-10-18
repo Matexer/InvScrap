@@ -78,14 +78,22 @@ class Database:
     def insert(self, product: Product, *, overwrite=False):
         table = tables[product.__class__]
         c = self.connection.cursor()
-        if not overwrite:
-            c.execute(
-                f"INSERT INTO {table} VALUES " +
-                str(astuple(product)))
+        data = astuple(product)
+        if len(data) > 1:
+            part_2 = ", ?" * (len(data) - 1)
+            part_2 = f"(?{part_2})"
         else:
-            c.execute(
-                f"INSERT OR REPLACE INTO {table} VALUES " +
-                str(astuple(product)))
+            part_2 = "?"
+
+        if not overwrite:
+            part_1 = f"INSERT INTO {table} VALUES "
+            order = part_1 + part_2
+            c.execute(order, data)
+        else:
+            part_1 = f"INSERT OR REPLACE INTO {table} VALUES "
+            order = part_1 + part_2
+            c.execute(order, data)
+
         self.connection.commit()
 
     def delete(self, product: Product):
