@@ -31,7 +31,7 @@ class Database:
         c.executescript(
         f"""CREATE TABLE "{tables[Etf]}" (
         "own_name"	TEXT NOT NULL UNIQUE,
-        "full_name"	TEXT NOT NULL UNIQUE,
+        "name"	TEXT NOT NULL UNIQUE,
         "country"	TEXT NOT NULL,
         "from_date"	TEXT NOT NULL,
         "to_date"	TEXT,

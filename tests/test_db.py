@@ -13,7 +13,7 @@ class TestDatabase(unittest.TestCase):
         super().__init__(*args, **kwargs)
         self.db = Database(test=True)
         self.input_cases =\
-            (Stock("Apple", "Apple Inc", "united states", 
+            (Stock("Apple", "AAPL", "united states", 
                    "01/01/2018", "17/10/2020"),
             Etf("WIG 20 ETF", "Beta ETF WIG20TR Portfelowy FIZ",
                 "poland", "01/01/2018", "17/10/2020", "Warsaw"))

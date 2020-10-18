@@ -4,3 +4,5 @@ __pycache__
 productsDB.db
 productsTestDB.db
 config.json
+output
+test_data
