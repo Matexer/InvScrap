@@ -1,8 +1,9 @@
 venv
-__pycache__
+__pycache__/
 .vscode
+.mypy_cache
 productsDB.db
 productsTestDB.db
 config.json
-output
-test_data
+output/
+test_data/

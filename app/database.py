@@ -33,7 +33,7 @@ class Database:
         "own_name"	TEXT NOT NULL UNIQUE,
         "name"	TEXT NOT NULL UNIQUE,
         "country"	TEXT NOT NULL,
-        "from_date"	TEXT NOT NULL,
+        "from_date"	TEXT,
         "to_date"	TEXT,
         "stock_exchange"	TEXT NOT NULL,
         PRIMARY KEY("own_name")
@@ -43,7 +43,7 @@ class Database:
         "own_name"	TEXT NOT NULL UNIQUE,
         "name"	TEXT NOT NULL UNIQUE,
         "country"	TEXT NOT NULL,
-        "from_date"	TEXT NOT NULL,
+        "from_date"	TEXT,
         "to_date"	TEXT,
         PRIMARY KEY("own_name")
         );""")

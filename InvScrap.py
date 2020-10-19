@@ -2,7 +2,7 @@ TEST = True
 
 if TEST:
     import unittest
-    #from tests import TestDatabase
+    # from tests import TestDatabase
     from tests import TestApp
     unittest.main(verbosity=2)
 else:
