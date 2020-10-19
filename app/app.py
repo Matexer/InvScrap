@@ -2,7 +2,7 @@ import datetime
 import json
 import os
 import sqlite3
-from typing import Union, Optional, Tuple
+from typing import Union, Optional, Tuple, Literal
 import investpy as ipy
 import pathlib
 import pandas
@@ -11,12 +11,28 @@ from .transform import Transform
 from .structures import Product, Etf, Stock, Config
 
 
+Boolean = Literal[True, False]
+
+
 class App:
     def __init__(self):
         self.today = datetime.date.today().strftime("%d/%m/%Y")
         self.config = self.load_config()
         self.db = Database()
         self.transforms = {"alphavantage": Transform.to_alphavantage}
+        self.download_all()
+
+    def download_all(self):
+        products = Product.__subclasses__()
+        for product in products:
+            product_items = self.db.get_all_products(product)
+            for item in product_items:
+                print(f"Downloading data for {item.own_name}: ", end='')
+                done = self.download(item)
+                if done:
+                    print("Success")
+                else:
+                    print("Failed")
 
     @staticmethod
     def load_config() -> Config:
@@ -87,12 +103,16 @@ class App:
         if pathlib.Path(path).is_file():
             return pandas.read_csv(path)
 
-    def download(self, product: Product):
+    def download(self, product: Product)\
+        -> Boolean:
         data = self.download_data(product)
         of = self.config.output_format
         if of in self.transforms.keys():
             data = self.transforms[of](data)
-        self.save_datafile(data, product.own_name)
+        if isinstance(data, pandas.DataFrame):
+            self.save_datafile(data, product.own_name)
+            return True
+        return False
 
     def update(self, product: Product):
         data = self.read_datafile(product.own_name)

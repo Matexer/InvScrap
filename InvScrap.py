@@ -1,4 +1,4 @@
-TEST = True
+TEST = False
 
 if TEST:
     import unittest
