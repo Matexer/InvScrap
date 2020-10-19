@@ -53,17 +53,20 @@ class App:
         else:
             from_date, to_date = self.get_dates(product)
         
-        if isinstance(product, Etf):
-            return ipy.etfs.get_etf_historical_data(
-                product.name, product.country, from_date,
-                to_date, stock_exchange=product.stock_exchange,
-                as_json=False, order='ascending',
-                interval='Daily')
-        elif isinstance(product, Stock):
-            return ipy.stocks.get_stock_historical_data(
-                product.name, product.country, from_date,
-                to_date, as_json=False, order='ascending',
-                interval='Daily')
+        try:
+            if isinstance(product, Etf):
+                return ipy.etfs.get_etf_historical_data(
+                    product.name, product.country, from_date,
+                    to_date, stock_exchange=product.stock_exchange,
+                    as_json=False, order='ascending',
+                    interval='Daily')
+            elif isinstance(product, Stock):
+                return ipy.stocks.get_stock_historical_data(
+                    product.name, product.country, from_date,
+                    to_date, as_json=False, order='ascending',
+                    interval='Daily')
+        except:
+            return None
 
     def get_dates(self, product):
         from_date = product.from_date
@@ -88,7 +91,7 @@ class App:
         if not pathlib.Path(path).is_dir():
             os.mkdir(path)
         path = f"{self.config.output_folder}/{name}.csv"
-        datafile.to_csv(path, index=False)
+        datafile.to_csv(path)
 
     def update_datafile(self, datafile: pandas.DataFrame, name: str):
         path = f"{self.config.output_folder}/{name}.csv"
